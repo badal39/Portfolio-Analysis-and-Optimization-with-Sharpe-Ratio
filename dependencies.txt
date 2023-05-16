@@ -1,0 +1,14 @@
+pandas==2.0.1
+  - numpy [required: >=1.21.0, installed: 1.24.3]
+  - python-dateutil [required: >=2.8.2, installed: 2.8.2]
+    - six [required: >=1.5, installed: 1.16.0]
+  - pytz [required: >=2020.1, installed: 2023.3]
+  - tzdata [required: >=2022.1, installed: 2023.3]
+pipenv==2023.4.29
+  - certifi [required: Any, installed: 2023.5.7]
+  - setuptools [required: >=67.0.0, installed: 67.7.2]
+  - virtualenv [required: >=20.17.1, installed: 20.23.0]
+    - distlib [required: >=0.3.6,<1, installed: 0.3.6]
+    - filelock [required: >=3.11,<4, installed: 3.12.0]
+    - platformdirs [required: >=3.2,<4, installed: 3.5.1]
+  - virtualenv-clone [required: >=0.2.5, installed: 0.5.7]

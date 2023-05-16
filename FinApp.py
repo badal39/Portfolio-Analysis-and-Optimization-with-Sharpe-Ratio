@@ -5,7 +5,8 @@ import datetime
 import time
 from streamlit_option_menu import option_menu
 # import yfinance as yf
-
+import plotly.graph_objects as go
+ 
 from stock_data import (
     download_nifty50_stock_list,
     create_random_portfolio,
@@ -94,7 +95,7 @@ with st.sidebar:
 
 
 if st.session_state.count != 0:
-        tab1, tab2, tab3 = st.tabs(["🗃 Data","Optimize","📈 Chart"])
+        tab1, tab2, tab3,tab4 = st.tabs(["🗃 Portfolio Overview","Optimized Portfolio","Performance Comparison","📈 Backtesting"])
         ### Class For Calculate Imp Kpis 
         calculate_kpis = KPIs(stock_data=stock_data)
         ### Daily Log Calculation's
@@ -126,10 +127,11 @@ if st.session_state.count != 0:
 
             st.write('The analysis of the risk and return between the '+ str(start_date)+' and ' + str(end_date) + ' reveals a significant imbalance, with a notably high level of risk and a comparatively low return. This observation underscores the inherent instability and volatility of our investment portfolio during this period. It emphasizes the need')
             st.dataframe(calculate_kpis.yearl_risk_return())
+            
             ini_ret,int_vol,int_sharpe_ratio = calculate_kpis.get_ret_vol_sr(weights=initial_portfolio.Weight.values)
-            st.write(ini_ret*100)
-            st.write(int_vol*100)
-            st.write(int_sharpe_ratio)
+            st.write('Portfolio Return With initial Weight',round(ini_ret*100,2))
+            st.write('Portfolio Risk With initial Weight',round(int_vol*100,2))
+            st.write('Portfolio sharpe Ratio With initial Weight',round(int_sharpe_ratio,2))
 
 
         
@@ -139,13 +141,14 @@ if st.session_state.count != 0:
 
         
         with tab2:
-                 if st.button('Optimize 0Portfolio'):
+                #  if st.button('Optimize 0Portfolio'):
 
                      ### Run Optimizer
                      log_ret = daily_log_return.iloc[:,1:].copy()
                      optimizer = PortfolioOptimizer(log_ret)
                      opt_results = optimizer.optimize_portfolio(init_guess)
-                     
+                     opt_ret,opt_vol,opt_sharpe_ratio = calculate_kpis.get_ret_vol_sr(weights=opt_results.x.round(2))
+
                      ### Optimize Weight
                      optimize_weight = opt_results.x
                      ### Initial Optimize Portfolio
@@ -172,8 +175,46 @@ if st.session_state.count != 0:
                           optimize_total_return =  round((optimize_final_portfolio_inivestment - optimize_init_portfolio_inivestment) / optimize_init_portfolio_inivestment  *100 ,2)      
                           col2.metric("Current Investment Valuation",'{:,}'.format(optimize_final_portfolio_inivestment) , str(optimize_total_return)+' %')
 
+                    #### Print optimal Weight Portfolio Return Risk And Sharpe Ratio
+                     st.write('Portfolio Return With initial Weight',round(opt_ret*100,2))
+                     st.write('Portfolio Risk With initial Weight',round(opt_vol*100,2))
+                     st.write('Portfolio sharpe Ratio With initial Weight',round(opt_sharpe_ratio,2))
 
-                          
+                     ### Use calculate_kpis class With calculate_portfolio_values to calculate Portfolio Valus for Given historical time with weight.
+                     ## calculate portfolio value with original weight associated for given historical data
+                     original_portfolio_value = calculate_kpis.calculate_portfolio_values(initial_portfolio=initial_portfolio,weight=init_guess)
+
+                     ## Calculate portfolio value with optimize weight associated for given historical data
+                     optimize_portfolio_value = calculate_kpis.calculate_portfolio_values(initial_portfolio=initial_portfolio,weight=optimize_weight)
+                    
+                    ## Merged Two Portfolio Values in to one with Coloums Date, Original Portfolio, Optimize Portfolio.  
+                     merged_portfolio_value_df = pd.merge(original_portfolio_value, optimize_portfolio_value, on='Date', how='inner')
+                    ## Rename Operation 
+                     merged_portfolio_value_df = merged_portfolio_value_df.rename(columns={'Portfolio Value_x':'Original portfolio','Portfolio Value_y':'Optimize portfolio'})
+                     with st.container():
+                              # Create a figure object
+                                fig = go.Figure()
+
+                                # Add the Original Portfolio Line Plot  trace with a teal Color
+                                fig.add_trace(go.Scatter(x=merged_portfolio_value_df['Date'], y=merged_portfolio_value_df['Original portfolio'], mode='lines', name='Original portfolio', line=dict(color='teal')))
+
+                                # Add the Optimize Portfolio Line Plot  trace with a orange Color
+                                fig.add_trace(go.Scatter(x=merged_portfolio_value_df['Date'], y=merged_portfolio_value_df['Optimize portfolio'], mode='lines', name='Optimize portfolio', line=dict(color='orange')))
+
+                                # Customize the layout
+                                fig.update_layout(title='Comparison of Original and Optimized Portfolio Values over Time', xaxis_title='Date', yaxis_title='Portfolio Values (Rupeess')
+
+                                # Render the line chart in Streamlit
+                                st.plotly_chart(fig)
+
+                                st.write('By tracking the evolving values, we uncover patterns, trends, and divergences between the two portfolios. This analysis assesses if optimization strategies outperform the original portfolio, providing insights into their effectiveness. Examining the original portfolio helps understand its historical growth and fluctuations, serving as a benchmark for evaluating the optimized version.')
+                                # st.dataframe(merged_portfolio_value_df)
+                                
+                                # st.line_chart(data=merged_portfolio_value_df, x='Date', y=['Original portfolio','Optimize portfolio'])
+                     
+
+
+
                      
 
         with tab3:
