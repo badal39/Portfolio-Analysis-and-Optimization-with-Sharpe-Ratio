@@ -65,7 +65,7 @@ with st.sidebar:
             start_date = st.date_input(
             "Selecte Start Date",
             datetime.date(2007, 10, 6),
-            max_value=datetime.date(2023,5,12),
+            max_value=datetime.date.today() - datetime.timedelta(days=7*30) ,
             min_value=datetime.date(2007,10,6)
             )
 
@@ -73,7 +73,7 @@ with st.sidebar:
             end_date = st.date_input(
             "Selecte End Date",
              datetime.date(2008, 10, 6),
-            max_value=datetime.date(2024,1,1),
+            max_value=datetime.date.today() - datetime.timedelta(days=30),
             min_value=datetime.date(2008,10,6)
             )
 
