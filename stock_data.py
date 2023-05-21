@@ -16,6 +16,28 @@ def download_nifty50_stock_list():
     return stock_symbols
 
 
+## Create Personal Portfolio With HandPicked Stock
+def create_personal_portfolio(stocks, shares,start_date, end_date):
+    # Download stock data for the selected stocks
+    stock_data = yf.download(list(stocks), start=start_date, end=end_date)['Adj Close']
+
+    # Remove stocks with any null values
+    stock_data = stock_data.dropna(axis=1)
+    stock_list = []
+    share_list = []
+    for i, stock in enumerate(stocks):
+        if shares[i] > 0 and stock in stock_data.keys():
+            stock_list.append(stock)
+            share_list.append(shares[i])
+            # portfolio[stock] = shares[i]
+
+    portfolio = pd.DataFrame({'Symbol': stock_list,
+                              'Shares': share_list}
+                             )
+    
+    # portfolio = pd.DataFrame(portfolio)
+    return stock_data,portfolio
+
 #### Generate Random Portfolio
 # @st.cache_data 
 def create_random_portfolio(list_stocks, start_date, end_date, max_portfolio_value=20000):

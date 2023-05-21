@@ -12,7 +12,8 @@ from stock_data import (
     create_random_portfolio,
     download_benchmark,
     calculate_asset_composition,
-    Add_new_weight_to_portfolio
+    Add_new_weight_to_portfolio,
+    create_personal_portfolio
 )
 
 from stock_KIPs import (
@@ -47,6 +48,8 @@ if 'stock_data' not in st.session_state:
 if 'stock_list' not in st.session_state:
 	st.session_state.stock_list = pd.DataFrame({})
 
+if 'nse_stock_list' not in st.session_state:
+	st.session_state.nse_stock_list = pd.DataFrame({})
 
 portfolio = st.session_state.portfolio
 stock_data = st.session_state.stock_data
@@ -56,7 +59,6 @@ stock_data = st.session_state.stock_data
 
 with st.sidebar:
 ## --------------------------------------------------------GENERATE PROTFOLIO --------------------------------------------------------------
-     with st.expander("Generate Random Protfolio"):
         
         # Define the date range for which you want to display market open dates
         
@@ -72,21 +74,65 @@ with st.sidebar:
         with col2:
             end_date = st.date_input(
             "Selecte End Date",
-             datetime.date(2008, 10, 6),
+             start_date + datetime.timedelta(days=366),
             max_value=datetime.date.today() - datetime.timedelta(days=30),
-            min_value=datetime.date(2008,10,6)
+            min_value= start_date + datetime.timedelta(days=366)  #datetime.date(2008,10,6)
             )
+        stock_list = download_nifty50_stock_list()
+    
+        with st.expander("Generate Random Protfolio"):
 
-        data = pd.DataFrame({})
-        if st.button('Generate Protfolio'):
-            
-                stock_list = download_nifty50_stock_list()
+                data = pd.DataFrame({})
+                if st.button('Generate Protfolio'):
+                    
+                        
+                        
+                        stock_data,portfolio = create_random_portfolio(stock_list, start_date, end_date, max_portfolio_value=100000)
+                        st.session_state.count += 1
+                        st.session_state.portfolio = portfolio
+                        st.session_state.stock_data = stock_data
+                        st.session_state.stock_list = stock_list
                 
-                stock_data,portfolio = create_random_portfolio(stock_list, start_date, end_date, max_portfolio_value=100000)
-                st.session_state.count += 1
-                st.session_state.portfolio = portfolio
-                st.session_state.stock_data = stock_data
-                st.session_state.stock_list = stock_list
+
+        with st.expander("Create Your Own Protfolio"):
+                        # st.title("Create Your Own Portfolio")
+                        nse_stock_list = pd.read_csv('./Data/nse_all_stock_list.csv')
+                        st.session_state.nse_stock_list = list(nse_stock_list['SYMBOL']+'.NS')
+                        st.subheader("For Good Results Select 10 or more Stock's for each company")
+
+                        # Select box for stock selection
+                        selected_stocks = st.multiselect("Select Stocks From NSE", st.session_state.nse_stock_list)
+                        # Input for number of shares
+                        shares = []
+                        for stock in selected_stocks:
+                            share = st.number_input(f"Number of shares for {stock}", min_value=0, step=1)
+                            shares.append(share)
+                        
+                        try :
+                                    if st.button('Create Protfolio'):
+                                
+                                            stock_data,portfolio = create_personal_portfolio(selected_stocks,shares,start_date, end_date)
+                                            st.session_state.count += 1
+                                            st.session_state.portfolio = portfolio
+                                            st.session_state.stock_data = stock_data
+                                            st.session_state.stock_list = stock_list
+
+                        except:
+                                    st.error('Please More Than one Stock & More Than one Share ')
+
+                        
+
+
+                # data = pd.DataFrame({})
+                # if st.button('Create Protfolio'):
+                    
+                #         stock_list = download_nifty50_stock_list()
+                        
+                #         stock_data,portfolio = create_random_portfolio(stock_list, start_date, end_date, max_portfolio_value=100000)
+                #         st.session_state.count += 1
+                #         st.session_state.portfolio = portfolio
+                #         st.session_state.stock_data = stock_data
+                #         st.session_state.stock_list = stock_list
 
                 
 
@@ -219,6 +265,48 @@ if st.session_state.count != 0:
 
         with tab3:
             st.write('Tab 2')
-            
+
+else:
+    def generate_stock_data():
+            # Generating synthetic data
+            time_periods = np.arange(1, 21)
+            stock_returns = np.random.uniform(low=0.05, high=0.2, size=(20,))
+            stock_prices = np.cumprod(1 + stock_returns)
+            return time_periods, stock_prices
+
+    def plot_stock_growth():
+            # Generate stock data
+            time_periods, stock_prices = generate_stock_data()
+
+            # Create the line graph
+            fig = go.Figure(data=go.Scatter(x=time_periods, y=stock_prices, mode='lines'))
+
+            # Customize the graph
+            fig.update_layout(
+                title="Stock Market Performance",
+                xaxis_title="Time Period",
+                yaxis_title="Stock Price",
+                hovermode="x",
+                template="plotly_white"
+            )
+
+            return fig
+
+
+      ## Heading
+    st.header('Empowering Your Investment Strategy: _Stock Portfolio Analysis and Optimization_')
+      ## SubHeading
+    st.text('Unleash the Power of Data to Build Your  Perfect Portfolio') 
+
+
+    st.markdown(""" <span style='color:gray'> Achieve better returns and manage risks by optimizing your portfolio. Analyze your investments, diversification, and risk tolerance to create an allocation strategy that maximizes gains while reducing exposure to market volatility. </span>  """, unsafe_allow_html=True)
+
+      
+
+
+
+    st.markdown(""" <span style='color:red'> Please note that this content is for informational purposes only and should not be considered financial advice.
+        Always conduct thorough research and consult with a qualified financial advisor before making investment decisions. </span> """, 
+               unsafe_allow_html=True)
 
         
