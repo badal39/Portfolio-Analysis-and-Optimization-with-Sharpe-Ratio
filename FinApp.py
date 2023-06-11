@@ -67,16 +67,16 @@ with st.sidebar:
             start_date = st.date_input(
             "Selecte Start Date",
             datetime.date(2007, 10, 6),
-            max_value=datetime.date.today() - datetime.timedelta(days=7*30) ,
+            max_value=datetime.date.today() - datetime.timedelta(days=2*30) ,
             min_value=datetime.date(2007,10,6)
             )
 
         with col2:
             end_date = st.date_input(
             "Selecte End Date",
-             start_date + datetime.timedelta(days=366),
-            max_value=datetime.date.today() - datetime.timedelta(days=30),
-            min_value= start_date + datetime.timedelta(days=366)  #datetime.date(2008,10,6)
+             start_date + datetime.timedelta(days=1*30),
+            max_value=datetime.date.today() - datetime.timedelta(days=1*30),
+            min_value= start_date + datetime.timedelta(days=1*30)  #datetime.date(2008,10,6)
             )
         stock_list = download_nifty50_stock_list()
     
@@ -141,7 +141,7 @@ with st.sidebar:
 
 
 if st.session_state.count != 0:
-        tab1, tab2, tab3,tab4 = st.tabs(["🗃 Portfolio Overview","Optimized Portfolio","Performance Comparison","📈 Backtesting"])
+        tab1, tab2, tab3 = st.tabs(["🗃 Portfolio Overview","Optimized Portfolio","Performance Comparison"])
         ### Class For Calculate Imp Kpis 
         calculate_kpis = KPIs(stock_data=stock_data)
         ### Daily Log Calculation's
@@ -171,13 +171,12 @@ if st.session_state.count != 0:
         
                 col2.metric("Current Investment Valuation",str(final_portfolio_inivestment) , str(total_return)+' %')
 
-            st.write('The analysis of the risk and return between the '+ str(start_date)+' and ' + str(end_date) + ' reveals a significant imbalance, with a notably high level of risk and a comparatively low return. This observation underscores the inherent instability and volatility of our investment portfolio during this period. It emphasizes the need')
-            st.dataframe(calculate_kpis.yearl_risk_return())
             
             ini_ret,int_vol,int_sharpe_ratio = calculate_kpis.get_ret_vol_sr(weights=initial_portfolio.Weight.values)
-            st.write('Portfolio Return With initial Weight',round(ini_ret*100,2))
-            st.write('Portfolio Risk With initial Weight',round(int_vol*100,2))
-            st.write('Portfolio sharpe Ratio With initial Weight',round(int_sharpe_ratio,2))
+            
+            
+            st.write("Both cumulative return and volatility are useful metrics for evaluating the performance and risk of an investment. The cumulative return tells us how much the investment has gained or lost over the given time period, while volatility gives an insight into the investment's stability or potential for large price swings")
+            st.dataframe(calculate_kpis.yearl_risk_return())
 
 
         
@@ -221,10 +220,7 @@ if st.session_state.count != 0:
                           optimize_total_return =  round((optimize_final_portfolio_inivestment - optimize_init_portfolio_inivestment) / optimize_init_portfolio_inivestment  *100 ,2)      
                           col2.metric("Current Investment Valuation",'{:,}'.format(optimize_final_portfolio_inivestment) , str(optimize_total_return)+' %')
 
-                    #### Print optimal Weight Portfolio Return Risk And Sharpe Ratio
-                     st.write('Portfolio Return With initial Weight',round(opt_ret*100,2))
-                     st.write('Portfolio Risk With initial Weight',round(opt_vol*100,2))
-                     st.write('Portfolio sharpe Ratio With initial Weight',round(opt_sharpe_ratio,2))
+
 
                      ### Use calculate_kpis class With calculate_portfolio_values to calculate Portfolio Valus for Given historical time with weight.
                      ## calculate portfolio value with original weight associated for given historical data
@@ -264,7 +260,23 @@ if st.session_state.count != 0:
                      
 
         with tab3:
-            st.write('Tab 2')
+
+            st.write('The analysis of the risk and return between the '+ str(start_date)+' and ' + str(end_date) + ' reveals a significant imbalance, with a notably high level of risk and a comparatively low return. This observation underscores the inherent instability and volatility of our investment portfolio during this period. It emphasizes the need')
+
+            col1,col2 = st.columns(2)
+            with col1:
+                    st.markdown("Portfolio Yearly Return With initial Weight :green["+str(round(ini_ret*100,2))+"] ")
+                    st.markdown("Portfolio Yearly Risk With initial Weight :green["+str(round(int_vol*100,2))+"] ")
+                    st.markdown("Portfolio Yearly sharpe Ratio With initial Weight :green["+str(round(int_sharpe_ratio,2))+"] ")
+
+            with col2:
+                      #### Print optimal Weight Portfolio Return Risk And Sharpe Ratio
+                    st.markdown("Portfolio Yearly Return With Optimize Weight :green["+str(round(opt_ret*100,2))+"] ")
+                    st.markdown("Portfolio Yearly Risk With Optimize Weight :green["+str(round(opt_vol*100,2))+"] ")
+                    st.markdown("Portfolio Yearly sharpe Ratio With Optimize Weight :green["+str(round(opt_sharpe_ratio,2))+"] ")
+
+
+
 
 else:
     def generate_stock_data():
