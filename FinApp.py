@@ -15,7 +15,7 @@ from stock_data import (
     create_personal_portfolio
 )
 
-from stock_KIPs import (
+from stock_KPIs import (
      KPIs
 )
 
