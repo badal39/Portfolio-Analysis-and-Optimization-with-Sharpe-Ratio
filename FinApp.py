@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import datetime
 import time
-from streamlit_option_menu import option_menu
 # import yfinance as yf
 import plotly.graph_objects as go
  
