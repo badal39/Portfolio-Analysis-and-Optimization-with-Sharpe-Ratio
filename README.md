@@ -2,6 +2,17 @@
 
 The project aims to develop a portfolio optimization system that maximizes returns while effectively managing risk. It involves collecting historical data on various assets from Yahoo Finance, conducting a comprehensive analysis of the portfolio, and optimizing asset allocation based on risk-adjusted metrics. The implementation will be done using Python, utilizing libraries such as Scipy and Streamlit.
 
+## Demo Images
+
+Here are some demo images for the project:
+
+![Image 1](https://github.com/badal39/Portfolio-Analysis-and-Optimization-with-Sharpe-Ratio/blob/main/Demo%20Images/img%20(1).png)
+![Image 2](https://github.com/badal39/Portfolio-Analysis-and-Optimization-with-Sharpe-Ratio/blob/main/Demo%20Images/img%20(2).png)
+![Image 3](https://github.com/badal39/Portfolio-Analysis-and-Optimization-with-Sharpe-Ratio/blob/main/Demo%20Images/img%20(3).png)
+![Image 4](https://github.com/badal39/Portfolio-Analysis-and-Optimization-with-Sharpe-Ratio/blob/main/Demo%20Images/img%20(4).png)
+![Image 5](https://github.com/badal39/Portfolio-Analysis-and-Optimization-with-Sharpe-Ratio/blob/main/Demo%20Images/img%20(5).png)
+![Image 6](https://github.com/badal39/Portfolio-Analysis-and-Optimization-with-Sharpe-Ratio/blob/main/Demo%20Images/img%20(6).png)
+
 ## Problem Statement
 
 The goal is to develop a system that automatically allocates assets in a portfolio based on historical data and risk-adjusted metrics. By doing so, investors can make informed decisions to achieve higher returns while considering the associated risks.
